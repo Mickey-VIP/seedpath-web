@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 type Doc = {
   id: string;
@@ -107,18 +107,57 @@ export default function RoadmapClient() {
       reader.readAsDataURL(file);
     });
 
-  async function handleFiles(e: React.ChangeEvent<HTMLInputElement>, phase: 'validation' | 'prototype' | 'launch') {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    const arr = Array.from(files);
+  const fileInputs = useRef<any>({});
+  const [dragOverPhase, setDragOverPhase] = useState<null | 'validation' | 'prototype' | 'launch'>(null);
+
+  const ACCEPTED_TYPES = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.oasis.opendocument.text',
+    'text/plain',
+  ];
+
+  function isAcceptedFile(file: File) {
+    if (ACCEPTED_TYPES.includes(file.type)) return true;
+    // fallback by extension
+    const name = file.name.toLowerCase();
+    return name.endsWith('.pdf') || name.endsWith('.doc') || name.endsWith('.docx') || name.endsWith('.odt') || name.endsWith('.txt');
+  }
+
+  async function handleFiles(e: React.ChangeEvent<HTMLInputElement> | FileList | null, phase: 'validation' | 'prototype' | 'launch') {
+    const filesList: File[] = [];
+    if (!e) return;
+    if ('length' in e && typeof e.item === 'function' && !(e as any).target) {
+      // e is FileList
+      for (let i = 0; i < (e as FileList).length; i++) {
+        const f = (e as FileList).item(i);
+        if (f) filesList.push(f);
+      }
+    } else if ('target' in (e as any)) {
+      const ev = e as React.ChangeEvent<HTMLInputElement>;
+      const files = ev.target.files;
+      if (!files) return;
+      for (let i = 0; i < files.length; i++) filesList.push(files[i]);
+    }
+
+    if (filesList.length === 0) return;
     const newDocs: Doc[] = [];
-    for (const file of arr) {
+    const invalid: string[] = [];
+    for (const file of filesList) {
+      if (!isAcceptedFile(file)) {
+        invalid.push(file.name);
+        continue;
+      }
       if (file.size > 5 * 1024 * 1024) {
-        showWarning('Archivo demasiado grande (máx 5MB).');
+        showWarning(`Archivo "${file.name}" demasiado grande (máx 5MB).`);
         continue;
       }
       const dataUrl = await readFileAsDataUrl(file);
       newDocs.push({ id: Date.now().toString(36) + Math.random().toString(16).slice(2), name: file.name, type: file.type, size: file.size, dataUrl });
+    }
+    if (invalid.length > 0) {
+      showWarning(`Tipo no permitido: ${invalid.slice(0, 3).join(', ')}${invalid.length > 3 ? ', ...' : ''}`);
     }
     if (newDocs.length === 0) return;
     setAttachments((prev) => {
@@ -128,8 +167,11 @@ export default function RoadmapClient() {
       }
       return next;
     });
-    // clear input
-    e.currentTarget.value = '';
+    // clear file input if used
+    try {
+      const input = fileInputs.current[phase] as HTMLInputElement | undefined;
+      if (input) input.value = '';
+    } catch {}
   }
 
   function deleteDoc(phase: 'validation' | 'prototype' | 'launch', id: string, e?: React.MouseEvent) {
@@ -229,7 +271,29 @@ export default function RoadmapClient() {
 
                   <div className="mt-4">
                     <label className="text-sm font-medium mb-2 block">Subir documentos de verificación (máx 5MB por archivo)</label>
-                    <input type="file" multiple onChange={(e) => handleFiles(e, 'validation')} className="text-sm" />
+                    <div
+                      onDragOver={(ev) => { ev.preventDefault(); setDragOverPhase('validation'); }}
+                      onDragLeave={() => setDragOverPhase(null)}
+                      onDrop={(ev) => { ev.preventDefault(); setDragOverPhase(null); handleFiles(ev.dataTransfer.files, 'validation'); }}
+                      onClick={() => fileInputs.current['validation']?.click()}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') fileInputs.current['validation']?.click(); }}
+                      className={`border-2 border-dashed p-4 rounded-lg flex items-center gap-4 cursor-pointer ${dragOverPhase === 'validation' ? 'border-white/40 bg-white/2' : 'border-white/10 bg-transparent'}`}
+                    >
+                      <div className="flex-1">
+                        <div className="text-sm text-slate-300">Arrastra aquí o haz click para examinar archivos. Tipos permitidos: PDF, DOC, DOCX, ODT, TXT.</div>
+                      </div>
+                      <button type="button" onClick={(e) => { e.stopPropagation(); fileInputs.current['validation']?.click(); }} className="px-3 py-2 bg-[#1f2937] rounded text-sm">Examinar</button>
+                      <input
+                        ref={(el) => (fileInputs.current['validation'] = el)}
+                        type="file"
+                        multiple
+                        accept=".pdf,.doc,.docx,.odt,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+                        className="hidden"
+                        onChange={(e) => handleFiles(e, 'validation')}
+                      />
+                    </div>
 
                     <div className="mt-4 space-y-3">
                       {attachments.validation.length === 0 && <div className="text-sm text-slate-500">No hay archivos subidos.</div>}
@@ -306,7 +370,29 @@ export default function RoadmapClient() {
 
                   <div className="mt-4">
                     <label className="text-sm font-medium mb-2 block">Subir documentos de verificación (máx 5MB por archivo)</label>
-                    <input type="file" multiple onChange={(e) => handleFiles(e, 'prototype')} className="text-sm" />
+                    <div
+                      onDragOver={(ev) => { ev.preventDefault(); setDragOverPhase('prototype'); }}
+                      onDragLeave={() => setDragOverPhase(null)}
+                      onDrop={(ev) => { ev.preventDefault(); setDragOverPhase(null); handleFiles(ev.dataTransfer.files, 'prototype'); }}
+                      onClick={() => fileInputs.current['prototype']?.click()}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') fileInputs.current['prototype']?.click(); }}
+                      className={`border-2 border-dashed p-4 rounded-lg flex items-center gap-4 cursor-pointer ${dragOverPhase === 'prototype' ? 'border-white/40 bg-white/2' : 'border-white/10 bg-transparent'}`}
+                    >
+                      <div className="flex-1">
+                        <div className="text-sm text-slate-300">Arrastra aquí o haz click para examinar archivos. Tipos permitidos: PDF, DOC, DOCX, ODT, TXT.</div>
+                      </div>
+                      <button type="button" onClick={(e) => { e.stopPropagation(); fileInputs.current['prototype']?.click(); }} className="px-3 py-2 bg-[#1f2937] rounded text-sm">Examinar</button>
+                      <input
+                        ref={(el) => (fileInputs.current['prototype'] = el)}
+                        type="file"
+                        multiple
+                        accept=".pdf,.doc,.docx,.odt,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+                        className="hidden"
+                        onChange={(e) => handleFiles(e, 'prototype')}
+                      />
+                    </div>
 
                     <div className="mt-4 space-y-3">
                       {attachments.prototype.length === 0 && <div className="text-sm text-slate-500">No hay archivos subidos.</div>}
@@ -377,7 +463,29 @@ export default function RoadmapClient() {
 
                   <div className="mt-4">
                     <label className="text-sm font-medium mb-2 block">Subir documentos de verificación (máx 5MB por archivo)</label>
-                    <input type="file" multiple onChange={(e) => handleFiles(e, 'launch')} className="text-sm" />
+                    <div
+                      onDragOver={(ev) => { ev.preventDefault(); setDragOverPhase('launch'); }}
+                      onDragLeave={() => setDragOverPhase(null)}
+                      onDrop={(ev) => { ev.preventDefault(); setDragOverPhase(null); handleFiles(ev.dataTransfer.files, 'launch'); }}
+                      onClick={() => fileInputs.current['launch']?.click()}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') fileInputs.current['launch']?.click(); }}
+                      className={`border-2 border-dashed p-4 rounded-lg flex items-center gap-4 cursor-pointer ${dragOverPhase === 'launch' ? 'border-white/40 bg-white/2' : 'border-white/10 bg-transparent'}`}
+                    >
+                      <div className="flex-1">
+                        <div className="text-sm text-slate-300">Arrastra aquí o haz click para examinar archivos. Tipos permitidos: PDF, DOC, DOCX, ODT, TXT.</div>
+                      </div>
+                      <button type="button" onClick={(e) => { e.stopPropagation(); fileInputs.current['launch']?.click(); }} className="px-3 py-2 bg-[#1f2937] rounded text-sm">Examinar</button>
+                      <input
+                        ref={(el) => (fileInputs.current['launch'] = el)}
+                        type="file"
+                        multiple
+                        accept=".pdf,.doc,.docx,.odt,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+                        className="hidden"
+                        onChange={(e) => handleFiles(e, 'launch')}
+                      />
+                    </div>
 
                     <div className="mt-4 space-y-3">
                       {attachments.launch.length === 0 && <div className="text-sm text-slate-500">No hay archivos subidos.</div>}
