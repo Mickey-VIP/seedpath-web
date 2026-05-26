@@ -1,13 +1,20 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
+type Doc = {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  dataUrl: string;
+};
 
 export default function RoadmapClient() {
   const [validationDone, setValidationDone] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const v = localStorage.getItem('roadmap_phase_validation_done');
       if (v !== null) return v === 'true';
-      // default: first phase already marked completed in UI
       return true;
     }
     return true;
@@ -28,6 +35,22 @@ export default function RoadmapClient() {
   });
 
   const [warning, setWarning] = useState<string>('');
+  const [expandedPhase, setExpandedPhase] = useState<null | 'validation' | 'prototype' | 'launch'>(null);
+
+  const loadDocs = (key: string): Doc[] => {
+    try {
+      if (typeof window === 'undefined') return [];
+      return JSON.parse(localStorage.getItem(key) || '[]');
+    } catch (e) {
+      return [];
+    }
+  };
+
+  const [attachments, setAttachments] = useState<{ validation: Doc[]; prototype: Doc[]; launch: Doc[] }>(() => ({
+    validation: loadDocs('roadmap_docs_validation'),
+    prototype: loadDocs('roadmap_docs_prototype'),
+    launch: loadDocs('roadmap_docs_launch'),
+  }));
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -70,6 +93,55 @@ export default function RoadmapClient() {
     if (phase === 'validation') setValidationDone(true);
     if (phase === 'prototype') setPrototypeDone(true);
     if (phase === 'launch') setLaunchDone(true);
+  }
+
+  function toggleExpand(phase: 'validation' | 'prototype' | 'launch') {
+    setExpandedPhase((prev) => (prev === phase ? null : phase));
+  }
+
+  const readFileAsDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+  async function handleFiles(e: React.ChangeEvent<HTMLInputElement>, phase: 'validation' | 'prototype' | 'launch') {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const arr = Array.from(files);
+    const newDocs: Doc[] = [];
+    for (const file of arr) {
+      if (file.size > 5 * 1024 * 1024) {
+        showWarning('Archivo demasiado grande (máx 5MB).');
+        continue;
+      }
+      const dataUrl = await readFileAsDataUrl(file);
+      newDocs.push({ id: Date.now().toString(36) + Math.random().toString(16).slice(2), name: file.name, type: file.type, size: file.size, dataUrl });
+    }
+    if (newDocs.length === 0) return;
+    setAttachments((prev) => {
+      const next = { ...prev, [phase]: [...prev[phase], ...newDocs] } as typeof prev;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`roadmap_docs_${phase}`, JSON.stringify(next[phase]));
+      }
+      return next;
+    });
+    // clear input
+    e.currentTarget.value = '';
+  }
+
+  function deleteDoc(phase: 'validation' | 'prototype' | 'launch', id: string, e?: React.MouseEvent) {
+    e?.stopPropagation();
+    setAttachments((prev) => {
+      const filtered = prev[phase].filter((d) => d.id !== id);
+      const next = { ...prev, [phase]: filtered } as typeof prev;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`roadmap_docs_${phase}`, JSON.stringify(filtered));
+      }
+      return next;
+    });
   }
 
   return (
@@ -122,7 +194,7 @@ export default function RoadmapClient() {
               </div>
             </div>
             <div className="glass-card rounded-3xl p-8 flex-1 transition-all hover:translate-x-2">
-              <div className="flex justify-between items-start mb-6">
+              <div className="flex justify-between items-start mb-6 cursor-pointer" onClick={() => toggleExpand('validation')}>
                 <div>
                   <span className="inline-block px-3 py-1 rounded-full bg-[#adc6ff]/10 text-[#adc6ff] text-[10px] font-bold uppercase tracking-widest mb-3">
                     Fase 1: Descubrimiento
@@ -132,9 +204,9 @@ export default function RoadmapClient() {
                 <div className="flex items-center gap-3">
                   <span className="text-[#adc6ff]/60 text-[10px] uppercase tracking-widest">Completado</span>
                   {!validationDone ? (
-                    <button onClick={() => markPhaseDone('validation')} className="text-xs px-2 py-1 bg-[#1f2937] rounded">Marcar completado</button>
+                    <button onClick={(e) => { e.stopPropagation(); markPhaseDone('validation'); }} className="text-xs px-2 py-1 bg-[#1f2937] rounded">Marcar completado</button>
                   ) : (
-                    <button onClick={() => markPhaseDone('validation')} className="text-xs px-2 py-1 bg-[#1f2937] rounded opacity-70">Completado</button>
+                    <button onClick={(e) => { e.stopPropagation(); markPhaseDone('validation'); }} className="text-xs px-2 py-1 bg-[#1f2937] rounded opacity-70">Completado</button>
                   )}
                 </div>
               </div>
@@ -148,6 +220,43 @@ export default function RoadmapClient() {
                   <span className="text-sm font-medium text-[#c2c6d6]">Análisis de brecha de mercado</span>
                 </div>
               </div>
+
+              {/* Expandable details + upload */}
+              {expandedPhase === 'validation' && (
+                <div className="mt-6 pt-6 border-t border-white/5">
+                  <h4 className="text-lg font-bold mb-2">Detalle y evidencias</h4>
+                  <p className="text-sm text-slate-300">Describe las entrevistas realizadas, conclusiones, hipótesis validadas y métricas obtenidas. Sube aquí los documentos (resúmenes, grabaciones, CSVs) que prueben que completaste esta fase.</p>
+
+                  <div className="mt-4">
+                    <label className="text-sm font-medium mb-2 block">Subir documentos de verificación (máx 5MB por archivo)</label>
+                    <input type="file" multiple onChange={(e) => handleFiles(e, 'validation')} className="text-sm" />
+
+                    <div className="mt-4 space-y-3">
+                      {attachments.validation.length === 0 && <div className="text-sm text-slate-500">No hay archivos subidos.</div>}
+                      {attachments.validation.map((doc) => (
+                        <div key={doc.id} className="flex items-center justify-between bg-[#0f1114] p-3 rounded">
+                          <div className="flex items-center gap-3">
+                            {doc.type.startsWith('image/') ? (
+                              <img src={doc.dataUrl} alt={doc.name} className="h-16 w-16 object-cover rounded" />
+                            ) : (
+                              <div className="h-12 w-12 rounded bg-[#1f2937] flex items-center justify-center text-xs text-slate-400">DOC</div>
+                            )}
+                            <div>
+                              <div className="font-medium text-sm">{doc.name}</div>
+                              <div className="text-xs text-slate-500">{(doc.size / 1024).toFixed(0)} KB</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <a href={doc.dataUrl} target="_blank" rel="noreferrer" className="text-sm text-[#adc6ff]">Abrir</a>
+                            <button onClick={(e) => deleteDoc('validation', doc.id, e)} className="text-xs px-2 py-1 bg-[#1f2937] rounded">Eliminar</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
             </div>
           </div>
 
@@ -160,7 +269,7 @@ export default function RoadmapClient() {
               </div>
             </div>
             <div className="glass-card rounded-3xl p-8 flex-1 border border-[#adc6ff]/20 transition-all hover:translate-x-2">
-              <div className="flex justify-between items-start mb-6">
+              <div className="flex justify-between items-start mb-6 cursor-pointer" onClick={() => toggleExpand('prototype')}>
                 <div>
                   <span className="inline-block px-3 py-1 rounded-full bg-[#c0c1ff]/10 text-[#c0c1ff] text-[10px] font-bold uppercase tracking-widest mb-3">
                     Fase 2: Validación de Hipótesis
@@ -179,6 +288,7 @@ export default function RoadmapClient() {
                   <span className="text-sm font-medium text-[#c2c6d6]">Medición de CTR y conversión</span>
                 </div>
               </div>
+
               <div className="mt-8 pt-6 border-t border-white/5">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-[10px] uppercase tracking-widest text-slate-500">Progreso de Fase</span>
@@ -188,6 +298,42 @@ export default function RoadmapClient() {
                   <div className="h-full bg-gradient-to-r from-[#adc6ff] to-[#d0bcff] w-[65%] rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
                 </div>
               </div>
+
+              {expandedPhase === 'prototype' && (
+                <div className="mt-6 pt-6 border-t border-white/5">
+                  <h4 className="text-lg font-bold mb-2">Detalle y evidencias</h4>
+                  <p className="text-sm text-slate-300">Sube especificaciones técnicas, diagramas de arquitectura, prototipos y pruebas de usuario que demuestren que el MVP satisface las hipótesis validadas.</p>
+
+                  <div className="mt-4">
+                    <label className="text-sm font-medium mb-2 block">Subir documentos de verificación (máx 5MB por archivo)</label>
+                    <input type="file" multiple onChange={(e) => handleFiles(e, 'prototype')} className="text-sm" />
+
+                    <div className="mt-4 space-y-3">
+                      {attachments.prototype.length === 0 && <div className="text-sm text-slate-500">No hay archivos subidos.</div>}
+                      {attachments.prototype.map((doc) => (
+                        <div key={doc.id} className="flex items-center justify-between bg-[#0f1114] p-3 rounded">
+                          <div className="flex items-center gap-3">
+                            {doc.type.startsWith('image/') ? (
+                              <img src={doc.dataUrl} alt={doc.name} className="h-16 w-16 object-cover rounded" />
+                            ) : (
+                              <div className="h-12 w-12 rounded bg-[#1f2937] flex items-center justify-center text-xs text-slate-400">DOC</div>
+                            )}
+                            <div>
+                              <div className="font-medium text-sm">{doc.name}</div>
+                              <div className="text-xs text-slate-500">{(doc.size / 1024).toFixed(0)} KB</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <a href={doc.dataUrl} target="_blank" rel="noreferrer" className="text-sm text-[#adc6ff]">Abrir</a>
+                            <button onClick={(e) => deleteDoc('prototype', doc.id, e)} className="text-xs px-2 py-1 bg-[#1f2937] rounded">Eliminar</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
             </div>
           </div>
 
@@ -199,7 +345,7 @@ export default function RoadmapClient() {
               </div>
             </div>
             <div className="glass-card rounded-3xl p-8 flex-1 transition-all hover:translate-x-2">
-              <div className="flex justify-between items-start mb-6">
+              <div className="flex justify-between items-start mb-6 cursor-pointer" onClick={() => toggleExpand('launch')}>
                 <div>
                   <span className="inline-block px-3 py-1 rounded-full bg-[#32353c] text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-3">
                     Fase 3: Desarrollo de MVP
@@ -209,7 +355,7 @@ export default function RoadmapClient() {
                 <div className="flex items-center gap-3">
                   <span className="text-slate-600 text-[10px] uppercase tracking-widest">Pendiente</span>
                   {!prototypeDone && validationDone && (
-                    <button onClick={() => markPhaseDone('prototype')} className="text-xs px-2 py-1 bg-[#1f2937] rounded">Marcar completado</button>
+                    <button onClick={(e) => { e.stopPropagation(); markPhaseDone('prototype'); }} className="text-xs px-2 py-1 bg-[#1f2937] rounded">Marcar completado</button>
                   )}
                 </div>
               </div>
@@ -223,41 +369,42 @@ export default function RoadmapClient() {
                   <span className="text-sm font-medium text-slate-400">Arquitectura de base de datos</span>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Milestone 4: Pending */}
-          <div id="phase-launch" className={"flex gap-12 group " + (launchDone ? '' : ((validationDone && prototypeDone) ? 'opacity-40 hover:opacity-100 transition-opacity' : 'opacity-30'))}>
-            <div className="relative z-10 flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-[#272a31] flex items-center justify-center border border-white/5">
-                <span className="material-symbols-outlined text-slate-600">radio_button_unchecked</span>
-              </div>
-            </div>
-            <div className="glass-card rounded-3xl p-8 flex-1 transition-all hover:translate-x-2">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <span className="inline-block px-3 py-1 rounded-full bg-[#32353c] text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-3">
-                    Fase 4: Lanzamiento al Mercado
-                  </span>
-                  <h3 className="text-2xl font-['Space_Grotesk'] font-bold text-[#e1e2eb]">Escalamiento Global</h3>
+              {expandedPhase === 'launch' && (
+                <div className="mt-6 pt-6 border-t border-white/5">
+                  <h4 className="text-lg font-bold mb-2">Detalle y evidencias</h4>
+                  <p className="text-sm text-slate-300">Aquí puedes adjuntar planes de lanzamiento, listas de verificación de go-to-market y evidencia de pruebas A/B o campañas piloto.</p>
+
+                  <div className="mt-4">
+                    <label className="text-sm font-medium mb-2 block">Subir documentos de verificación (máx 5MB por archivo)</label>
+                    <input type="file" multiple onChange={(e) => handleFiles(e, 'launch')} className="text-sm" />
+
+                    <div className="mt-4 space-y-3">
+                      {attachments.launch.length === 0 && <div className="text-sm text-slate-500">No hay archivos subidos.</div>}
+                      {attachments.launch.map((doc) => (
+                        <div key={doc.id} className="flex items-center justify-between bg-[#0f1114] p-3 rounded">
+                          <div className="flex items-center gap-3">
+                            {doc.type.startsWith('image/') ? (
+                              <img src={doc.dataUrl} alt={doc.name} className="h-16 w-16 object-cover rounded" />
+                            ) : (
+                              <div className="h-12 w-12 rounded bg-[#1f2937] flex items-center justify-center text-xs text-slate-400">DOC</div>
+                            )}
+                            <div>
+                              <div className="font-medium text-sm">{doc.name}</div>
+                              <div className="text-xs text-slate-500">{(doc.size / 1024).toFixed(0)} KB</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <a href={doc.dataUrl} target="_blank" rel="noreferrer" className="text-sm text-[#adc6ff]">Abrir</a>
+                            <button onClick={(e) => deleteDoc('launch', doc.id, e)} className="text-xs px-2 py-1 bg-[#1f2937] rounded">Eliminar</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-slate-600 text-[10px] uppercase tracking-widest">Pendiente</span>
-                  {!launchDone && validationDone && prototypeDone && (
-                    <button onClick={() => markPhaseDone('launch')} className="text-xs px-2 py-1 bg-[#1f2937] rounded">Marcar completado</button>
-                  )}
-                </div>
-              </div>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-[#272a31]/20">
-                  <span className="material-symbols-outlined text-slate-600 text-sm">campaign</span>
-                  <span className="text-sm font-medium text-slate-500">Estrategia de Go-to-Market</span>
-                </div>
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-[#272a31]/20">
-                  <span className="material-symbols-outlined text-slate-600 text-sm">ads_click</span>
-                  <span className="text-sm font-medium text-slate-500">Campañas de adquisición inicial</span>
-                </div>
-              </div>
+              )}
+
             </div>
           </div>
 
