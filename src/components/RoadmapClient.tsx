@@ -286,7 +286,7 @@ export default function RoadmapClient() {
                       </div>
                       <button type="button" onClick={(e) => { e.stopPropagation(); fileInputs.current['validation']?.click(); }} className="px-3 py-2 bg-[#1f2937] rounded text-sm">Examinar</button>
                       <input
-                        ref={(el) => (fileInputs.current['validation'] = el)}
+                        ref={(el) => { fileInputs.current['validation'] = el; }}
                         type="file"
                         multiple
                         accept=".pdf,.doc,.docx,.odt,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
@@ -385,7 +385,7 @@ export default function RoadmapClient() {
                       </div>
                       <button type="button" onClick={(e) => { e.stopPropagation(); fileInputs.current['prototype']?.click(); }} className="px-3 py-2 bg-[#1f2937] rounded text-sm">Examinar</button>
                       <input
-                        ref={(el) => (fileInputs.current['prototype'] = el)}
+                        ref={(el) => { fileInputs.current['prototype'] = el; }}
                         type="file"
                         multiple
                         accept=".pdf,.doc,.docx,.odt,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
@@ -478,7 +478,7 @@ export default function RoadmapClient() {
                       </div>
                       <button type="button" onClick={(e) => { e.stopPropagation(); fileInputs.current['launch']?.click(); }} className="px-3 py-2 bg-[#1f2937] rounded text-sm">Examinar</button>
                       <input
-                        ref={(el) => (fileInputs.current['launch'] = el)}
+                        ref={(el) => { fileInputs.current['launch'] = el; }}
                         type="file"
                         multiple
                         accept=".pdf,.doc,.docx,.odt,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
