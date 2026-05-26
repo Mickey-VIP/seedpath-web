@@ -78,7 +78,7 @@ export default function AdvancedPage() {
     try {
       localStorage.setItem('onboarding_advanced_completed_at', String(Date.now()));
     } catch (e) {}
-    router.push('/dashboard');
+    router.push('/onboarding/roadmap');
   }
 
   function handleReset() {
