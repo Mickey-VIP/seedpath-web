@@ -519,49 +519,7 @@ export default function RoadmapClient() {
         </div>
       </div>
 
-      {/* Bento Summary Grid */}
-      <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6">
-
-        {/* Métricas Card */}
-        <div className="md:col-span-2 glass-card rounded-3xl p-8 relative overflow-hidden">
-          <div className="relative z-10">
-            <h4 className="text-lg font-['Space_Grotesk'] font-bold mb-4">Métricas de Ejecución</h4>
-            <div className="flex items-end gap-12">
-              <div>
-                <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Tasa de Completado</p>
-                <p className="text-4xl font-['Space_Grotesk'] font-bold text-[#adc6ff]">38%</p>
-              </div>
-              <div>
-                <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Días en Sprint</p>
-                <p className="text-4xl font-['Space_Grotesk'] font-bold text-[#e1e2eb]">24</p>
-              </div>
-              <div>
-                <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Nivel de Riesgo</p>
-                <p className="text-4xl font-['Space_Grotesk'] font-bold text-[#c0c1ff]">Bajo</p>
-              </div>
-            </div>
-          </div>
-          <div className="absolute right-0 bottom-0 w-1/3 h-full opacity-10 pointer-events-none flex items-end justify-end">
-            <span className="material-symbols-outlined text-[200px]">insights</span>
-          </div>
-        </div>
-
-        {/* Próximo Hito Card */}
-        <div className="bg-gradient-to-br from-[#adc6ff] to-[#d0bcff] p-[1px] rounded-3xl">
-          <div className="bg-[#0b0e14] h-full w-full rounded-3xl p-8 flex flex-col justify-between">
-            <div>
-              <h4 className="text-lg font-['Space_Grotesk'] font-bold mb-2">Próximo Hito Crítico</h4>
-              <p className="text-sm text-[#c2c6d6] font-light">
-                Validación de Arquitectura Cloud para escalamiento masivo.
-              </p>
-            </div>
-            <button className="mt-6 w-full py-3 bg-gradient-to-r from-[#adc6ff] to-[#d0bcff] rounded-full text-[#002e6a] font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_20px_rgba(173,198,255,0.3)] transition-all">
-              Ver Detalles
-            </button>
-          </div>
-        </div>
-
-      </div>
+      
     </div>
   );
 }
