@@ -52,6 +52,12 @@ export default function Page() {
     }
   }, [current]);
 
+  const [isThinking, setIsThinking] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const THINK_DELAY = 700; // ms
+  const ANALYZE_DELAY = 1600; // ms
+
   function updateAnswer(value: string) {
     setAnswers((prev) => {
       const copy = [...prev];
@@ -61,18 +67,33 @@ export default function Page() {
   }
 
   function handleNext() {
-    if (current < QUESTIONS.length - 1) setCurrent((c) => c + 1);
-    else handleFinish();
+    if (isThinking || isAnalyzing) return;
+    if (current < QUESTIONS.length - 1) {
+      setIsThinking(true);
+      setTimeout(() => {
+        setCurrent((c) => c + 1);
+        setIsThinking(false);
+      }, THINK_DELAY);
+    } else {
+      // Última pregunta: mostrar análisis antes de redirigir
+      setIsAnalyzing(true);
+      setTimeout(() => {
+        console.log('[Onboarding] Respuestas finales:', answers);
+        // Aquí podrías enviar `answers` a una API antes de redirigir
+        router.push('/dashboard');
+      }, ANALYZE_DELAY);
+    }
   }
 
   function handlePrev() {
-    if (current > 0) setCurrent((c) => c - 1);
-  }
-
-  function handleFinish() {
-    console.log('[Onboarding] Respuestas finales:', answers);
-    // Aquí podrías enviar `answers` a una API antes de redirigir
-    router.push('/dashboard');
+    if (isThinking || isAnalyzing) return;
+    if (current > 0) {
+      setIsThinking(true);
+      setTimeout(() => {
+        setCurrent((c) => c - 1);
+        setIsThinking(false);
+      }, THINK_DELAY);
+    }
   }
 
   function handleReset() {
@@ -115,7 +136,7 @@ export default function Page() {
 
         <div className="space-y-8">
 
-          <section className="glass-card p-8 rounded-3xl">
+          <section className="glass-card p-8 rounded-3xl relative">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-lg font-semibold font-headline text-white">Pregunta {current + 1} de {QUESTIONS.length}</h2>
@@ -127,6 +148,29 @@ export default function Page() {
                 </div>
               </div>
             </div>
+
+            {(isThinking || isAnalyzing) && (
+              <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/60 rounded-3xl">
+                <div className="text-center text-white px-6">
+                  {isThinking && (
+                    <>
+                      <div className="text-xl font-semibold mb-2">Pensando...</div>
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="w-2 h-2 bg-white rounded-full animate-bounce" />
+                        <span className="w-2 h-2 bg-white rounded-full animate-bounce delay-150" />
+                        <span className="w-2 h-2 bg-white rounded-full animate-bounce delay-300" />
+                      </div>
+                    </>
+                  )}
+                  {isAnalyzing && (
+                    <>
+                      <div className="text-2xl font-bold mb-4">Haciendo el análisis de tus respuestas...</div>
+                      <div className="mx-auto w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className="mt-4">
               <h3 className="text-3xl md:text-4xl font-bold font-headline text-white leading-snug">{QUESTIONS[current]}</h3>
