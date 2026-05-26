@@ -80,7 +80,7 @@ export default function Page() {
       setTimeout(() => {
         console.log('[Onboarding] Respuestas finales:', answers);
         // Aquí podrías enviar `answers` a una API antes de redirigir
-        router.push('/dashboard');
+        router.push('/onboarding/analysis');
       }, ANALYZE_DELAY);
     }
   }
