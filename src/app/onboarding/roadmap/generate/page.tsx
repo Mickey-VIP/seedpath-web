@@ -54,7 +54,7 @@ export default function RoadmapGeneratePage() {
               <h3 className="text-2xl font-bold text-white mb-4">Roadmap listo</h3>
               <p className="text-slate-400 mb-6">Hemos generado un roadmap inicial con acciones priorizadas. Puedes revisarlo y ajustarlo.</p>
               <div className="flex gap-3 justify-center">
-                <button onClick={() => router.push('/dashboard')} className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-bold">Ver mi roadmap</button>
+                <button onClick={() => router.push('/roadmap')} className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-bold">Ver mi roadmap</button>
                 <button onClick={() => router.push('/onboarding/roadmap')} className="px-8 py-3 bg-[#1f2937] text-white rounded-full">Volver</button>
               </div>
             </>
