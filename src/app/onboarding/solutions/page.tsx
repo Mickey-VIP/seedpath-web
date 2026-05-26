@@ -25,7 +25,7 @@ export default function SolutionsPage() {
           </ol>
 
           <div className="flex gap-3">
-            <button onClick={() => router.push('/dashboard')} className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-bold">Quiero ayuda con esto</button>
+            <button onClick={() => router.push('/onboarding/register')} className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-bold">Quiero ayuda con esto</button>
             <button onClick={() => router.push('/onboarding/analysis')} className="px-6 py-3 bg-[#1f2937] text-white rounded-full">Volver al análisis</button>
           </div>
         </div>
