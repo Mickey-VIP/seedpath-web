@@ -1,30 +1,90 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-const DISCIPLINES = ['Finanzas', 'Tecnología', 'Operaciones', 'Ventas', 'Marketing'];
-
-const RISK_LABELS = [
-  { value: 1, label: 'Conservador' },
-  { value: 2, label: 'Moderado' },
-  { value: 3, label: 'Alto Crecimiento' },
+const QUESTIONS: string[] = [
+  'Cuéntame tu idea en un par de líneas: ¿Qué problema estás resolviendo y a quién le urge tanto que la construyas?',
+  'Interesante. Pero seamos reales: la gente ya resuelve esto de alguna forma hoy, aunque sea usando Excel, WhatsApp o haciéndolo a mano. ¿Por qué alguien dejaría su hábito actual para usar tu solución?',
+  'Imagina que lanzas mañana, pero tienes $0 pesos para meterle a Facebook Ads o Instagram. ¿Cuál es el paso a paso exacto para conseguir a tus primeros 10 clientes de pago?',
+  'Para que esto sea un negocio y no un hobby caro: ¿Cómo y cuánto vas a cobrar, y cuál es el gasto más fuerte que vas a tener que absorber mes a mes para operar?'
 ];
 
-
 export default function Page() {
-  const [discipline, setDiscipline] = useState<string | null>('Finanzas');
-  const [risk, setRisk] = useState<number>(2);
-  const [capital, setCapital] = useState<string>('');
-  const [vision, setVision] = useState<string>('');
   const router = useRouter();
 
-  function handleSave() {
-    const payload = { discipline, risk, capital, vision };
-    console.log('[Onboarding] Guardando perfil:', payload);
-    // Aquí podrías conectar con la API
+  const [current, setCurrent] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const s = localStorage.getItem('onboarding_step_v1');
+      return s ? Number(s) : 0;
+    }
+    return 0;
+  });
+
+  const [answers, setAnswers] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('onboarding_answers_v1');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length === QUESTIONS.length) return parsed;
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+    return Array(QUESTIONS.length).fill('');
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('onboarding_answers_v1', JSON.stringify(answers));
+    } catch (e) {
+      // ignore
+    }
+  }, [answers]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('onboarding_step_v1', String(current));
+    } catch (e) {
+      // ignore
+    }
+  }, [current]);
+
+  function updateAnswer(value: string) {
+    setAnswers((prev) => {
+      const copy = [...prev];
+      copy[current] = value;
+      return copy;
+    });
+  }
+
+  function handleNext() {
+    if (current < QUESTIONS.length - 1) setCurrent((c) => c + 1);
+    else handleFinish();
+  }
+
+  function handlePrev() {
+    if (current > 0) setCurrent((c) => c - 1);
+  }
+
+  function handleFinish() {
+    console.log('[Onboarding] Respuestas finales:', answers);
+    // Aquí podrías enviar `answers` a una API antes de redirigir
     router.push('/dashboard');
   }
+
+  function handleReset() {
+    setAnswers(Array(QUESTIONS.length).fill(''));
+    setCurrent(0);
+    try {
+      localStorage.removeItem('onboarding_answers_v1');
+      localStorage.removeItem('onboarding_step_v1');
+    } catch (e) {}
+  }
+
+  const progress = Math.round(((current + 1) / QUESTIONS.length) * 100);
 
   return (
     <div className="bg-surface-container-lowest text-on-background font-body min-h-screen selection:bg-primary-container/30">
@@ -49,160 +109,64 @@ export default function Page() {
             Cuestionario de Evaluación Activa
           </h1>
           <p className="text-primary font-medium text-lg max-w-xl mx-auto">
-            Cuéntanos tu verdadero yo, no tu yo percibido. Define tus cimientos estratégicos.
+            Responde una pregunta a la vez; tus respuestas se guardan automáticamente.
           </p>
         </header>
 
         <div className="space-y-8">
 
-          {/* Card 1: Disciplina */}
           <section className="glass-card p-8 rounded-3xl">
-            <div className="flex items-center gap-3 mb-6">
-              <span className="material-symbols-outlined text-primary">work</span>
-              <h2 className="text-xl font-semibold font-headline text-white">
-                ¿Cuál es tu disciplina profesional primaria?
-              </h2>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-semibold font-headline text-white">Pregunta {current + 1} de {QUESTIONS.length}</h2>
+                <p className="text-sm text-slate-400">Progreso: {progress}%</p>
+              </div>
+              <div className="w-40">
+                <div className="h-2 bg-[#272a31] rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600" style={{ width: `${progress}%` }} />
+                </div>
+              </div>
             </div>
-            <div className="flex flex-wrap gap-3">
-              {DISCIPLINES.map((d) => {
-                const isActive = discipline === d;
-                return (
+
+            <div className="mt-4">
+              <h3 className="text-3xl md:text-4xl font-bold font-headline text-white leading-snug">{QUESTIONS[current]}</h3>
+
+              <textarea
+                value={answers[current] ?? ''}
+                onChange={(e) => updateAnswer(e.target.value)}
+                placeholder="Escribe tu respuesta aquí..."
+                rows={8}
+                className="w-full mt-6 bg-[#0b0e14]/60 rounded-xl border border-white/6 focus:border-primary/60 focus:ring-1 focus:ring-primary/10 text-on-surface p-6 text-lg transition-all resize-none outline-none placeholder:text-slate-600 min-h-[180px]"
+              />
+
+              <div className="mt-6 flex items-center justify-between">
+                <button
+                  onClick={handlePrev}
+                  disabled={current === 0}
+                  className={
+                    'px-6 py-3 rounded-full font-semibold transition-all duration-150 ' +
+                    (current === 0
+                      ? 'bg-[#272a31] text-slate-600 cursor-not-allowed'
+                      : 'bg-[#1f2937] text-white hover:brightness-105')
+                  }
+                >
+                  Anterior
+                </button>
+
+                <div className="flex items-center gap-3">
+                  <button onClick={handleReset} className="text-slate-500 hover:text-white">Borrar respuestas</button>
                   <button
-                    key={d}
-                    onClick={() => setDiscipline(d)}
-                    className={[
-                      'px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 active:scale-95',
-                      isActive
-                        ? 'bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/20'
-                        : 'bg-[#272a31] text-slate-400 hover:bg-[#32353c] hover:text-slate-200 border border-white/5',
-                    ].join(' ')}
+                    onClick={handleNext}
+                    className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-bold hover:scale-[1.02] active:scale-95 transition-transform"
                   >
-                    {d}
+                    {current < QUESTIONS.length - 1 ? 'Siguiente' : 'Finalizar'}
                   </button>
-                );
-              })}
-              <button
-                onClick={() => setDiscipline('Otro')}
-                className={[
-                  'px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-1',
-                  discipline === 'Otro'
-                    ? 'bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/20'
-                    : 'border border-white/10 text-primary hover:border-primary',
-                ].join(' ')}
-              >
-                Otro [+ Agregar]
-              </button>
-            </div>
-          </section>
-
-          {/* Card 2: Capital */}
-          <section className="glass-card p-8 rounded-3xl">
-            <div className="flex items-center gap-3 mb-6">
-              <span className="material-symbols-outlined text-primary">payments</span>
-              <h2 className="text-xl font-semibold font-headline text-white">
-                Ingresa manualmente los recursos con los que cuentas.
-              </h2>
-            </div>
-            <div className="relative group">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-3xl font-bold text-blue-500">$</span>
-              <input
-                className="w-full bg-[#0b0e14]/50 border-b-2 border-white/10 focus:border-primary focus:ring-0 text-4xl font-bold text-white pl-12 py-4 transition-all placeholder:text-slate-700 outline-none"
-                placeholder="0.00"
-                type="number"
-                value={capital}
-                onChange={(e) => setCapital(e.target.value)}
-              />
-            </div>
-            <p className="mt-4 text-xs text-slate-500 font-medium uppercase tracking-widest">
-              Entrada de datos crudos, sin autoevaluación.
-            </p>
-          </section>
-
-          {/* Card 3: Visión */}
-          <section className="glass-card p-8 rounded-3xl">
-            <div className="flex items-center gap-3 mb-6">
-              <span className="material-symbols-outlined text-primary">psychology</span>
-              <h2 className="text-xl font-semibold font-headline text-white">
-                Describe el problema específico que te apasiona resolver.
-              </h2>
-            </div>
-            <textarea
-              className="w-full bg-[#0b0e14]/50 rounded-xl border border-white/10 focus:border-primary/60 focus:ring-1 focus:ring-primary/20 text-on-surface p-4 transition-all resize-none outline-none placeholder:text-slate-700"
-              placeholder="ej: Micro-logística para pequeñas empresas en CDMX..."
-              rows={4}
-              value={vision}
-              onChange={(e) => setVision(e.target.value)}
-            />
-          </section>
-
-          {/* Card 4: Riesgo */}
-          <section className="glass-card p-8 rounded-3xl">
-            <div className="flex items-center gap-3 mb-8">
-              <span className="material-symbols-outlined text-primary">speed</span>
-              <h2 className="text-xl font-semibold font-headline text-white">
-                Evalúa tu perfil de riesgo primario para un nuevo emprendimiento.
-              </h2>
-            </div>
-            <div className="px-4">
-              {/* Slider */}
-              <input
-                className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-blue-500"
-                style={{ background: `linear-gradient(to right, #3B82F6 ${((risk - 1) / 2) * 100}%, #272a31 ${((risk - 1) / 2) * 100}%)` }}
-                max={3}
-                min={1}
-                step={1}
-                type="range"
-                value={risk}
-                onChange={(e) => setRisk(Number(e.target.value))}
-              />
-              {/* Labels */}
-              <div className="flex justify-between mt-6">
-                {RISK_LABELS.map(({ value, label }) => {
-                  const isActive = risk === value;
-                  return (
-                    <div key={value} className="text-center">
-                      <span
-                        className={[
-                          'block font-bold uppercase tracking-tighter transition-all duration-200',
-                          isActive
-                            ? 'text-primary text-sm drop-shadow-[0_0_8px_rgba(173,198,255,0.6)]'
-                            : 'text-slate-600 text-xs',
-                        ].join(' ')}
-                      >
-                        {label}
-                      </span>
-                      {isActive && (
-                        <div className="w-1.5 h-1.5 bg-primary rounded-full mx-auto mt-2 shadow-[0_0_10px_rgba(173,198,255,0.8)]" />
-                      )}
-                    </div>
-                  );
-                })}
+                </div>
               </div>
             </div>
           </section>
 
         </div>
-
-        {/* Footer Actions */}
-        <footer className="mt-16 flex flex-col items-center gap-8">
-          <p className="text-sm text-slate-500 font-medium text-center">
-            Estas entradas crudas alimentan a Gemini Pro para generar tu análisis final.
-          </p>
-          <div className="flex items-center gap-6 w-full md:w-auto">
-            <button
-              onClick={() => { setDiscipline(null); setRisk(2); setCapital(''); setVision(''); }}
-              className="px-8 py-4 text-slate-500 font-semibold hover:text-white transition-colors"
-            >
-              Descartar Cambios
-            </button>
-            <button
-              onClick={handleSave}
-              className="flex-1 md:flex-none px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-white font-bold font-headline tracking-tight shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
-            >
-              GENERAR MI HIPÓTESIS ✨
-            </button>
-          </div>
-        </footer>
 
       </main>
 
@@ -211,7 +175,7 @@ export default function Page() {
         <div className="flex items-center gap-4 bg-[#1d2026]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-3 pr-6 shadow-2xl">
           <div className="relative">
             <img
-              alt="Avatar MickeyVIP"
+              alt="Avatar"
               className="w-12 h-12 rounded-xl object-cover border border-primary/20"
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbdB7L2ewXxVcULrVIrsG1NAF4dV2wrl3Pm603is0Xa8FicLATPGtJ_uUfLBSg3NsqF3uD1-gosZsIc1ovvSqLSG56IB3zXe0Dr1tpJet2ZSIePloIPRX4GK2I7OEpghVT42A2wV9Ycbu5gzAqWsdAcVP70VX-7vTPdjAWKMHBrjdAQ--QAkRl-fnawVwhSAOECLuby71Yc3fZ0CzuqrjwpAgE48TnhJnJ4HB3uATsBDdXU8RjZkcjn3dFEWLXVGO9AtJEorTboBxA"
             />
