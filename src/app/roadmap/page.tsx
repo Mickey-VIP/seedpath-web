@@ -1,77 +1,6 @@
-"use client";
-
-import { useEffect, useState } from 'react';
+import RoadmapClient from '../../components/RoadmapClient';
 
 export default function Page() {
-  const [validationDone, setValidationDone] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      const v = localStorage.getItem('roadmap_phase_validation_done');
-      if (v !== null) return v === 'true';
-      // default: first phase already marked completed in UI
-      return true;
-    }
-    return true;
-  });
-
-  const [prototypeDone, setPrototypeDone] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('roadmap_phase_prototype_done') === 'true';
-    }
-    return false;
-  });
-
-  const [launchDone, setLaunchDone] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('roadmap_phase_launch_done') === 'true';
-    }
-    return false;
-  });
-
-  const [warning, setWarning] = useState<string>('');
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem('roadmap_phase_validation_done', String(validationDone));
-  }, [validationDone]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem('roadmap_phase_prototype_done', String(prototypeDone));
-  }, [prototypeDone]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem('roadmap_phase_launch_done', String(launchDone));
-  }, [launchDone]);
-
-  function showWarning(msg: string) {
-    setWarning(msg);
-    setTimeout(() => setWarning(''), 3000);
-  }
-
-  function scrollToId(id: string) {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  function handleTopClick(phase: 'validation' | 'prototype' | 'launch') {
-    if (phase === 'validation') return scrollToId('phase-validation');
-    if (phase === 'prototype') {
-      if (!validationDone) return showWarning('Completa la etapa de Validación antes de avanzar a Prototipado.');
-      return scrollToId('phase-mvp');
-    }
-    if (phase === 'launch') {
-      if (!validationDone || !prototypeDone) return showWarning('Debes completar las etapas previas antes de lanzar.');
-      return scrollToId('phase-launch');
-    }
-  }
-
-  function markPhaseDone(phase: 'validation' | 'prototype' | 'launch') {
-    if (phase === 'validation') setValidationDone(true);
-    if (phase === 'prototype') setPrototypeDone(true);
-    if (phase === 'launch') setLaunchDone(true);
-  }
-
   return (
     <div className="bg-[#0b0e14] text-[#e1e2eb] font-['Inter'] selection:bg-[#adc6ff]/30 h-full flex">
       <main className="flex-1 relative flex flex-col min-w-0">
@@ -95,43 +24,16 @@ export default function Page() {
         </header>
 
         {/* Page Content */}
-        <div className="p-12 max-w-6xl mx-auto w-full">
+        <RoadmapClient />
+      </main>
 
-          {/* Header Section */}
-          <div className="mb-16">
-            <h1 className="text-5xl font-['Space_Grotesk'] font-bold text-[#e1e2eb] tracking-tight mb-4">
-              Hoja de Ruta de Ejecución
-            </h1>
-            <p className="text-xl text-[#c2c6d6] font-light max-w-2xl">
-              Monitoreo de progreso y próximos hitos estratégicos para la consolidación del ecosistema SeedPath.
-            </p>
-          </div>
+      {/* Background accents */}
+      <div className="fixed top-0 right-0 -z-10 w-[500px] h-[500px] bg-[#3B82F6] opacity-[0.03] blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+      <div className="fixed bottom-0 left-0 -z-10 w-[600px] h-[600px] bg-[#8B5CF6] opacity-[0.03] blur-[150px] rounded-full -translate-x-1/2 translate-y-1/2 pointer-events-none" />
 
-          {/* Top phases selector */}
-          <div className="mb-8">
-            {warning && (
-              <div className="mb-4 text-sm text-yellow-300 bg-[#3f2a0f]/30 p-3 rounded-md">{warning}</div>
-            )}
-            <div className="flex gap-4">
-              <button onClick={() => handleTopClick('validation')} className={"flex-1 p-4 rounded-xl text-left transition-shadow " + (validationDone ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg' : 'bg-[#0f1114] border border-white/6 text-white') }>
-                <div className="font-bold">1 - Validación</div>
-                <div className="text-sm text-slate-300">Entrevistas, hipótesis y tracción inicial</div>
-              </button>
-
-              <button onClick={() => handleTopClick('prototype')} className={"flex-1 p-4 rounded-xl text-left transition-shadow " + (prototypeDone ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg' : 'bg-[#0f1114] border border-white/6 text-white ' + (validationDone ? '' : 'opacity-60 cursor-not-allowed')) }>
-                <div className="font-bold">2 - Prototipado / MVP</div>
-                <div className="text-sm text-slate-300">Arquitectura, stack y desarrollo inicial</div>
-              </button>
-
-              <button onClick={() => handleTopClick('launch')} className={"flex-1 p-4 rounded-xl text-left transition-shadow " + (launchDone ? 'bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg' : 'bg-[#0f1114] border border-white/6 text-white ' + ((validationDone && prototypeDone) ? '' : 'opacity-60 cursor-not-allowed')) }>
-                <div className="font-bold">3 - Lanzamiento</div>
-                <div className="text-sm text-slate-300">Go-to-market y adquisición</div>
-              </button>
-            </div>
-          </div>
-
-          {/* Vertical Roadmap */}
-          <div className="relative">
+    </div>
+  );
+}
             {/* Central Timeline Line */}
             <div className="absolute left-6 top-4 bottom-4 w-px bg-gradient-to-b from-[#adc6ff] to-transparent opacity-20" />
             <div className="space-y-12">
