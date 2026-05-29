@@ -54,6 +54,11 @@ const Sidebar = () => {
   const pathname = usePathname();
   const { isCollapsed, setIsCollapsed } = useSidebar();
 
+  // Hide the sidebar on landing, login and registro routes
+  const hideOn = ['/', '/login', '/registro'];
+  const shouldHide = pathname ? hideOn.some((p) => pathname === p || pathname.startsWith(p + '/')) : false;
+  if (shouldHide) return null;
+
   return (
     <motion.aside
       className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ''}`}
