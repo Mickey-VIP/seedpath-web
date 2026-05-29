@@ -23,7 +23,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <Link
                 className="px-10 py-5 bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white text-lg font-bold rounded-full hover:scale-105 transition-transform shadow-xl shadow-primary/20 flex-shrink-0"
-                href="/registro"
+                href="/onboarding"
               >
                 Crea tu Camino Gratis ✨
               </Link>
@@ -126,7 +126,7 @@ export default function Home() {
             </h2>
             <Link
               className="inline-block px-12 py-6 bg-white text-surface-container-lowest text-xl font-bold rounded-full hover:bg-primary transition-colors hover:text-white"
-              href="/registro"
+              href="/onboarding"
             >
               Comienza la Arquitectura
             </Link>

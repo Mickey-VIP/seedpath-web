@@ -79,8 +79,8 @@ export default function Page() {
       setIsAnalyzing(true);
       setTimeout(() => {
         console.log('[Onboarding] Respuestas finales:', answers);
-        // Aquí podrías enviar `answers` a una API antes de redirigir
-        router.push('/onboarding/analysis');
+        // Después del cuestionario rápido, dirigir al registro/pago y luego al cuestionario avanzado
+        router.push('/onboarding/register');
       }, ANALYZE_DELAY);
     }
   }

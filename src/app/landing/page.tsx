@@ -24,7 +24,7 @@ export default function Page() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <Link href="/registro" className="px-8 md:px-10 py-4 bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white text-lg font-bold rounded-full hover:scale-105 transition-transform shadow-xl shadow-primary/20">
+              <Link href="/onboarding" className="px-8 md:px-10 py-4 bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white text-lg font-bold rounded-full hover:scale-105 transition-transform shadow-xl shadow-primary/20">
                 Crea tu Camino Gratis ✨
               </Link>
               <Link href="/nosotros" className="px-8 md:px-10 py-4 glass-panel text-white text-lg font-medium rounded-full hover:bg-white/5 transition-all">
