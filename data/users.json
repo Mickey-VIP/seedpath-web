@@ -1,0 +1,15 @@
+[
+  {
+    "id": "u_e3b95f15-ddcb-4273-ab4b-dfae54305b8d",
+    "name": "Real User",
+    "email": "realuser@example.com",
+    "passwordHash": "$2a$08$VzMSEzXujU1/pkw/qevhyetEvKel6ZwcjRtRckd6OULd1pNdi5kcq",
+    "createdAt": 1780021906805,
+    "subscription": {
+      "plan": "growth",
+      "price": 29,
+      "status": "active",
+      "startedAt": 1780021908649
+    }
+  }
+]

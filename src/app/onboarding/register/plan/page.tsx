@@ -25,15 +25,28 @@ export default function PlanPage() {
   function handleSubscribe() {
     if (!userExists) return router.push('/onboarding/register');
     setIsProcessing(true);
-    setTimeout(() => {
+    (async () => {
       try {
+        const token = localStorage.getItem('token');
         const plan = PLANS.find((p) => p.id === selected) ?? PLANS[0];
-        localStorage.setItem('subscription_v1', JSON.stringify({ plan: plan.id, price: plan.priceNum, status: 'active', startedAt: Date.now() }));
+        const res = await fetch('/api/auth/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ plan: plan.id, price: plan.priceNum }) });
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data?.error || 'Error procesando pago');
+          return;
+        }
+        // optionally update local user
+        try {
+          const user = JSON.parse(localStorage.getItem('user_v1') || 'null');
+          if (user) { user.subscription = data.subscription; localStorage.setItem('user_v1', JSON.stringify(user)); }
+        } catch (e) {}
+        router.push('/onboarding/advanced');
+      } catch (e) {
+        alert('Error de red');
       } finally {
         setIsProcessing(false);
-        router.push('/onboarding/advanced');
       }
-    }, 1200);
+    })();
   }
 
   return (

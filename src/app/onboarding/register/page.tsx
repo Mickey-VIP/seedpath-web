@@ -17,18 +17,25 @@ export default function RegisterPage() {
     const normalized = email.trim();
     if (!/\S+@\S+\.\S+/.test(normalized)) return setError('Correo inválido');
     if (password.length < 6) return setError('La contraseña debe tener al menos 6 caracteres');
-
     setIsProcessing(true);
-    setTimeout(() => {
+    (async () => {
       try {
-        const user = { name: name.trim(), email: normalized, createdAt: Date.now() };
-        localStorage.setItem('user_v1', JSON.stringify(user));
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name.trim(), email: normalized, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) return setError(data?.error || 'Error creando cuenta');
+        // persist token and user client-side
+        try { localStorage.setItem('token', data.token); localStorage.setItem('user_v1', JSON.stringify(data.user)); } catch (e) {}
+        router.push('/onboarding/register/plan');
+      } catch (e: any) {
+        setError(e?.message || 'Error de red');
       } finally {
         setIsProcessing(false);
-        // Después de crear la cuenta, dirigir al selector de planes
-        router.push('/onboarding/register/plan');
       }
-    }, 900);
+    })();
   }
 
   return (

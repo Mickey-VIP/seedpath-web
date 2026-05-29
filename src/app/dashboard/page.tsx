@@ -1,4 +1,37 @@
+"use client";
+
+import { useEffect, useState } from 'react';
+
 export default function Page() {
+  const [user, setUser] = useState<any>(null);
+  const [projects, setProjects] = useState<any[]>([]);
+
+  useEffect(() => {
+    (async () => {
+                if (pRes.ok) {
+                  const { projects } = await pRes.json();
+                  setProjects(projects || []);
+                }
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          const meRes = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+          if (meRes.ok) {
+            const { user } = await meRes.json();
+            setUser(user);
+          }
+          const pRes = await fetch('/api/projects', { headers: { Authorization: `Bearer ${token}` } });
+          if (pRes.ok) {
+            const { projects } = await pRes.json();
+            setProjects(projects || []);
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    })();
+  }, []);
+
   return (
     <div className="h-screen w-full flex overflow-hidden">
 
@@ -18,8 +51,50 @@ export default function Page() {
         </header>
 
         <div className="flex-1 overflow-y-auto p-8 space-y-8 min-h-0" data-purpose="chat-scroll-area">
-          <div className="flex justify-center">
-            <span className="text-[9px] uppercase tracking-widest text-gray-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">Hoy — 14:20</span>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <span className="text-[9px] uppercase tracking-widest text-gray-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">Hoy — 14:20</span>
+              {user && <span className="text-sm text-slate-300">Sesión: <strong className="text-white">{user.name}</strong></span>}
+            </div>
+            <div>
+              <button onClick={async () => { localStorage.removeItem('token'); localStorage.removeItem('user_v1'); location.reload(); }} className="text-sm text-red-400">Cerrar sesión</button>
+            </div>
+          </div>
+
+          {/* Projects list */}
+          <div className="mt-6">
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const form = e.currentTarget as HTMLFormElement;
+              const fd = new FormData(form);
+              const title = String(fd.get('title') || '').trim();
+              const content = String(fd.get('content') || '').trim();
+              if (!title) return;
+              const token = localStorage.getItem('token');
+              const res = await fetch('/api/projects', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ title, content }) });
+              if (res.ok) {
+                const { project } = await res.json();
+                setProjects((p) => [project, ...p]);
+                form.reset();
+              }
+            }} className="flex gap-2 items-center mb-4">
+              <input name="title" placeholder="Nuevo proyecto: título" className="flex-1 px-3 py-2 rounded-lg bg-[#0b0e14]/40 border border-white/6 text-white" />
+              <button className="px-4 py-2 bg-blue-600 rounded-full text-white">Crear</button>
+            </form>
+
+            {projects.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold">Tus proyectos</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {projects.map((p) => (
+                  <div key={p.id} className="glass-card p-4 rounded-lg">
+                    <div className="font-bold text-white">{p.title}</div>
+                    <div className="text-sm text-slate-400">{p.content}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            )}
           </div>
 
           {/* AI Message */}

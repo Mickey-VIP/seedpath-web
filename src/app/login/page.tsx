@@ -7,7 +7,24 @@ export default function Page() {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    router.push("/onboarding");
+    (async () => {
+      const form = e.currentTarget as HTMLFormElement;
+      const formData = new FormData(form);
+      const email = String(formData.get('email') || '').trim();
+      const password = String(formData.get('password') || '');
+      try {
+        const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data?.error || 'Error al iniciar sesión');
+          return;
+        }
+        try { localStorage.setItem('token', data.token); localStorage.setItem('user_v1', JSON.stringify(data.user)); } catch (e) {}
+        router.push('/dashboard');
+      } catch (e) {
+        alert('Error de red');
+      }
+    })();
   }
 
   return (
@@ -43,16 +60,18 @@ export default function Page() {
                 Correo Electrónico
               </label>
               <input
-                className="glass-input w-full px-3.5 py-3 rounded-xl text-white text-sm placeholder-slate-600"
-                placeholder="julian.rossi@seedpath.io"
-                type="email"
-              />
+                  name="email"
+                  className="glass-input w-full px-3.5 py-3 rounded-xl text-white text-sm placeholder-slate-600"
+                  placeholder="julian.rossi@seedpath.io"
+                  type="email"
+                />
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-0.5">
                 Contraseña
               </label>
               <input
+                name="password"
                 className="glass-input w-full px-3.5 py-3 rounded-xl text-white text-sm placeholder-slate-600"
                 placeholder="••••••••"
                 type="password"
