@@ -21,11 +21,7 @@ export default function Page() {
 
       <div className="w-full max-w-sm px-4 flex flex-col items-center gap-6">
 
-        {/* ── Logo ── */}
-        <div className="flex items-center gap-2 select-none">
-          <span className="material-symbols-outlined text-3xl text-[#3B82F6]">potted_plant</span>
-          <h1 className="font-headline text-2xl font-bold tracking-tighter text-[#3B82F6]">SeedPath</h1>
-        </div>
+        {/* Logo removed; use global header for brand link */}
 
         {/* ── Login Card ── */}
         <main className="w-full rounded-2xl p-7 shadow-2xl relative overflow-hidden"

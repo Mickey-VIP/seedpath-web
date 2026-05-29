@@ -1,14 +1,6 @@
 export default function Page() {
   return (
     <div className="bg-surface-container-lowest text-on-surface font-body antialiased min-h-screen overflow-hidden">
-{/* Top Left: Brand Logo (Shared Component Logic) */}
-        <header className="fixed top-0 left-0 w-full z-50 pointer-events-none">
-          <div className="flex justify-between items-center px-8 py-6 w-full">
-            <div className="text-2xl font-headline font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary pointer-events-auto">
-              SeedPath
-            </div>
-          </div>
-        </header>
         {/* Main Loading Canvas */}
         <main className="relative flex flex-col items-center justify-center min-h-screen w-full px-6">
           {/* High-End Circular Loading Element */}

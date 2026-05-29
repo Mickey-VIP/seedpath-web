@@ -1,25 +1,7 @@
 export default function Page() {
   return (
     <div className="bg-surface-container-lowest text-on-surface font-body antialiased selection:bg-primary/30">
-{/* TopNavBar */}
-        <header className="fixed top-0 w-full z-50 bg-[#10131a]/80 backdrop-blur-2xl border-b border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]">
-          <div className="flex justify-between items-center px-8 h-20 max-w-7xl mx-auto">
-            <div className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent font-['Space_Grotesk'] tracking-tight">
-              SeedPath
-            </div>
-            <nav className="hidden md:flex gap-10 font-['Space_Grotesk'] tracking-tight">
-              <a className="text-blue-400 border-b-2 border-blue-500 pb-1" href="#">Visión</a>
-              <a className="text-slate-400 hover:text-white transition-colors" href="#">Metodología</a>
-              <a className="text-slate-400 hover:text-white transition-colors" href="#">Equipo</a>
-            </nav>
-            <div className="flex items-center gap-4">
-              <button className="bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white px-6 py-2.5 rounded-full font-medium active:scale-95 transition-transform hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-                Contactar
-              </button>
-            </div>
-          </div>
-        </header>
-        <main className="pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto overflow-hidden">
+        <main className="pt-24 pb-24 px-6 md:px-12 max-w-7xl mx-auto overflow-hidden">
           {/* Section: Vision (Bento-inspired asymmetrical layout) */}
           <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-32">
             <div className="lg:col-span-7 space-y-6">
