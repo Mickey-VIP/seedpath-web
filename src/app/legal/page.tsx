@@ -23,29 +23,8 @@ export default function Page() {
               Nuestros marcos legales están diseñados para proteger la integridad de los activos digitales y garantizar la transparencia en el procesamiento de datos arquitectónicos.
             </p>
           </header>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            {/* Table of Contents (Sticky) */}
-            <aside className="hidden lg:block lg:col-span-3">
-              <div className="sticky top-32 space-y-4">
-                <div className="text-xs font-bold tracking-widest text-primary uppercase mb-6">Documentación</div>
-                <nav className="flex flex-col gap-3">
-                  <a className="text-slate-200 hover:text-primary transition-colors py-2 flex items-center gap-3 group" href="#intelectual">
-                    <span className="w-1 h-1 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                    Propiedad Intelectual
-                  </a>
-                  <a className="text-slate-400 hover:text-primary transition-colors py-2 flex items-center gap-3 group" href="#ia-data">
-                    <span className="w-1 h-1 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                    Uso de Datos de IA
-                  </a>
-                  <a className="text-slate-400 hover:text-primary transition-colors py-2 flex items-center gap-3 group" href="#financiera">
-                    <span className="w-1 h-1 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                    Responsabilidad Financiera
-                  </a>
-                </nav>
-              </div>
-            </aside>
-            {/* Content Area */}
-            <div className="lg:col-span-9 space-y-12">
+          <div className="space-y-12">
+            <div className="space-y-12">
               {/* Section: Propiedad Intelectual */}
               <section className="glass-panel p-8 md:p-12 rounded-lg" id="intelectual">
                 <div className="flex items-center gap-4 mb-8">
