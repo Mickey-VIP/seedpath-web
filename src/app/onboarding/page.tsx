@@ -110,19 +110,8 @@ export default function Page() {
   return (
     <div className="bg-surface-container-lowest text-on-background font-body min-h-screen selection:bg-primary-container/30">
 
-      {/* Top Navigation Bar */}
-      <nav className="sticky top-0 z-50 bg-[#0B0E14]/80 backdrop-blur-xl border-b border-white/10 flex justify-between items-center w-full px-8 py-6">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-            <span className="material-symbols-outlined text-white text-xl">potted_plant</span>
-          </div>
-          <span className="text-2xl font-black text-white tracking-tighter font-headline">SeedPath</span>
-        </div>
-        <div />
-      </nav>
-
       {/* Main Content */}
-      <main className="max-w-3xl mx-auto px-6 pt-12 pb-48">
+      <main className="max-w-3xl mx-auto px-6 pt-6 pb-48">
 
         {/* Header */}
         <header className="text-center mb-16 space-y-4">

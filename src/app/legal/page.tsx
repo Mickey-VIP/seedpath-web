@@ -1,19 +1,7 @@
 export default function Page() {
   return (
     <div className="bg-[#0b0e14] text-on-surface font-body selection:bg-primary/30">
-{/* TopNavBar */}
-        <nav className="bg-[#10131a]/80 backdrop-blur-xl font-['Space_Grotesk'] tracking-tight fixed top-0 w-full z-50 border-b border-white/10 shadow-2xl shadow-blue-500/5 flex justify-between items-center px-8 h-16 w-full">
-          <div className="text-xl font-bold text-slate-50">SeedPath</div>
-          <div className="hidden md:flex gap-8">
-            <a className="text-blue-400 font-semibold border-b-2 border-blue-500 hover:bg-white/5 transition-all active:scale-95 duration-200" href="#">Terms</a>
-            <a className="text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-all active:scale-95 duration-200" href="#">Privacy</a>
-            <a className="text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-all active:scale-95 duration-200" href="#">Compliance</a>
-          </div>
-          <button className="gradient-border-btn px-5 py-2 rounded-full text-sm font-medium text-blue-400 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300">
-            Download PDF
-          </button>
-        </nav>
-        <main className="pt-32 pb-24 px-6 md:px-12 max-w-6xl mx-auto">
+        <main className="pt-8 pb-24 px-6 md:px-12 max-w-6xl mx-auto">
           {/* Hero Section */}
           <header className="mb-20 text-center md:text-left">
             <h1 className="font-headline text-5xl md:text-7xl font-bold tracking-tight text-slate-50 mb-6">
