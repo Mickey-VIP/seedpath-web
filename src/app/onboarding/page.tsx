@@ -212,31 +212,7 @@ export default function Page() {
 
       </main>
 
-      {/* Bottom Left Profile */}
-      <div className="fixed bottom-8 left-8 z-50">
-        <div className="flex items-center gap-4 bg-[#1d2026]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-3 pr-6 shadow-2xl">
-          <div className="relative">
-            <img
-              alt="Avatar"
-              className="w-12 h-12 rounded-xl object-cover border border-primary/20"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbdB7L2ewXxVcULrVIrsG1NAF4dV2wrl3Pm603is0Xa8FicLATPGtJ_uUfLBSg3NsqF3uD1-gosZsIc1ovvSqLSG56IB3zXe0Dr1tpJet2ZSIePloIPRX4GK2I7OEpghVT42A2wV9Ycbu5gzAqWsdAcVP70VX-7vTPdjAWKMHBrjdAQ--QAkRl-fnawVwhSAOECLuby71Yc3fZ0CzuqrjwpAgE48TnhJnJ4HB3uATsBDdXU8RjZkcjn3dFEWLXVGO9AtJEorTboBxA"
-            />
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-[#1d2026] rounded-full" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-bold text-white leading-tight">MickeyVIP</span>
-            <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Arquitecto Senior</span>
-          </div>
-          <div className="h-8 w-[1px] bg-white/10 mx-2" />
-          <button
-            aria-label="Cerrar sesión"
-            className="text-slate-400 hover:text-red-400 transition-colors active:scale-95"
-            onClick={() => router.push('/')}
-          >
-            <span className="material-symbols-outlined text-[20px]">logout</span>
-          </button>
-        </div>
-      </div>
+      {/* Profile widget removed from onboarding to avoid showing logged-in UI */}
 
     </div>
   );
