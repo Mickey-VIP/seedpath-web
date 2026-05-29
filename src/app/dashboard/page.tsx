@@ -8,10 +8,6 @@ export default function Page() {
 
   useEffect(() => {
     (async () => {
-                if (pRes.ok) {
-                  const { projects } = await pRes.json();
-                  setProjects(projects || []);
-                }
       try {
         const token = localStorage.getItem('token');
         if (token) {
