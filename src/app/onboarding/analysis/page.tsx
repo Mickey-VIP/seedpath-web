@@ -16,7 +16,7 @@ export default function AnalysisPage() {
     let mounted = true;
     let v = 0;
     const interval = setInterval(() => {
-      v += Math.floor(Math.random() * 12) + 6; // increments vary so it feels dynamic
+      v += Math.floor(Math.random() * 12) + 6;
       if (v >= 100) {
         v = 100;
         if (mounted) setProgress(v);
@@ -35,7 +35,7 @@ export default function AnalysisPage() {
     };
   }, []);
 
-  // Ensure any previously stored onboarding email doesn't leak between users
+  // Remove any previously stored onboarding email so test data doesn't leak between users
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -92,26 +92,27 @@ export default function AnalysisPage() {
                         setError('Ingresa un correo válido');
                         return;
                       }
+
                       setIsSubmitting(true);
                       setTimeout(() => {
                         try {
-                          localStorage.setItem('onboarding_contact_email_v1', normalized);
-                          localStorage.setItem('onboarding_contact_at_v1', String(Date.now()));
+                          if (typeof window !== 'undefined') {
+                            // persist only for the session to avoid long-lived exposure
+                            sessionStorage.setItem('onboarding_contact_email_v1', normalized);
+                            sessionStorage.setItem('onboarding_contact_at_v1', String(Date.now()));
+                          }
                           setSubmitted(true);
                         } finally {
-                          setIsSubmitting(true);
-                          setTimeout(() => {
-                            try {
-                              // persist only for the session to avoid long-lived exposure
-                              if (typeof window !== 'undefined') {
-                                sessionStorage.setItem('onboarding_contact_email_v1', normalized);
-                                sessionStorage.setItem('onboarding_contact_at_v1', String(Date.now()));
-                              }
-                              setSubmitted(true);
-                            } finally {
-                              setIsSubmitting(false);
-                            }
-                          }, 900);
+                          setIsSubmitting(false);
+                        }
+                      }, 900);
+                    }}
+                    className="flex flex-col items-center gap-3"
+                  >
+                    <div className="w-full md:flex md:items-center md:justify-center md:gap-3">
+                      <input
+                        type="email"
+                        value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="tu@correo.com"
                         className="w-full md:w-80 px-4 py-3 rounded-lg bg-[#0b0e14]/50 border border-white/6 text-white outline-none"
