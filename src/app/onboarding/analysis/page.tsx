@@ -7,15 +7,9 @@ export default function AnalysisPage() {
   const router = useRouter();
   const [progress, setProgress] = useState(0);
   const [done, setDone] = useState(false);
-  const [email, setEmail] = useState(() => {
-    if (typeof window !== 'undefined') return localStorage.getItem('onboarding_contact_email_v1') || '';
-    return '';
-  });
+  const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(() => {
-    if (typeof window !== 'undefined') return Boolean(localStorage.getItem('onboarding_contact_email_v1'));
-    return false;
-  });
+  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -39,6 +33,18 @@ export default function AnalysisPage() {
       mounted = false;
       clearInterval(interval);
     };
+  }, []);
+
+  // Ensure any previously stored onboarding email doesn't leak between users
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('onboarding_contact_email_v1');
+        localStorage.removeItem('onboarding_contact_at_v1');
+      } catch (e) {
+        // ignore
+      }
+    }
   }, []);
 
   return (
@@ -93,16 +99,19 @@ export default function AnalysisPage() {
                           localStorage.setItem('onboarding_contact_at_v1', String(Date.now()));
                           setSubmitted(true);
                         } finally {
-                          setIsSubmitting(false);
-                        }
-                      }, 900);
-                    }}
-                    className="flex flex-col items-center gap-3"
-                  >
-                    <div className="w-full md:flex md:items-center md:justify-center md:gap-3">
-                      <input
-                        type="email"
-                        value={email}
+                          setIsSubmitting(true);
+                          setTimeout(() => {
+                            try {
+                              // persist only for the session to avoid long-lived exposure
+                              if (typeof window !== 'undefined') {
+                                sessionStorage.setItem('onboarding_contact_email_v1', normalized);
+                                sessionStorage.setItem('onboarding_contact_at_v1', String(Date.now()));
+                              }
+                              setSubmitted(true);
+                            } finally {
+                              setIsSubmitting(false);
+                            }
+                          }, 900);
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="tu@correo.com"
                         className="w-full md:w-80 px-4 py-3 rounded-lg bg-[#0b0e14]/50 border border-white/6 text-white outline-none"
@@ -124,7 +133,7 @@ export default function AnalysisPage() {
                     <div className="text-sm text-slate-300 mb-3">Gracias. Te enviaremos al correo <strong className="text-white">{email}</strong> los pasos para solucionar los riesgos.</div>
                     <div className="flex gap-3 justify-center">
                       <button onClick={() => router.push('/onboarding/solutions')} className="px-8 py-3 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-full font-bold">Ver cómo solucionarlo</button>
-                      <button onClick={() => router.push('/dashboard')} className="px-8 py-3 bg-[#1f2937] text-white rounded-full">Omitir y continuar</button>
+                      <button onClick={() => router.push('/')} className="px-8 py-3 bg-[#1f2937] text-white rounded-full">No quiero solucionarlo</button>
                     </div>
                   </div>
                 )}
