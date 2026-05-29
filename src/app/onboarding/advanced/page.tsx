@@ -14,16 +14,19 @@ const QUESTIONS2: string[] = [
 export default function AdvancedPage() {
   const router = useRouter();
 
-  const [current, setCurrent] = useState<number>(() => {
-    if (typeof window !== 'undefined') {
-      const s = localStorage.getItem('onboarding_advanced_step_v1');
-      return s ? Number(s) : 0;
-    }
-    return 0;
-  });
+  const [current, setCurrent] = useState<number>(0);
 
-  const [answers, setAnswers] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
+  const [answers, setAnswers] = useState<string[]>(Array(QUESTIONS2.length).fill(''));
+
+  // Load persisted advanced onboarding state on mount (avoid hydration mismatch)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const s = localStorage.getItem('onboarding_advanced_step_v1');
+      if (s) setCurrent(Number(s));
+    } catch (e) {}
+
+    try {
       const saved = localStorage.getItem('onboarding_advanced_answers_v1');
       if (saved) {
         try {
@@ -31,15 +34,14 @@ export default function AdvancedPage() {
           if (Array.isArray(parsed)) {
             const arr = Array(QUESTIONS2.length).fill('');
             for (let i = 0; i < Math.min(parsed.length, QUESTIONS2.length); i++) arr[i] = parsed[i] ?? '';
-            return arr;
+            setAnswers(arr);
           }
         } catch (e) {
           // ignore
         }
       }
-    }
-    return Array(QUESTIONS2.length).fill('');
-  });
+    } catch (e) {}
+  }, []);
 
   useEffect(() => {
     try {

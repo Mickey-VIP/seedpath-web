@@ -13,28 +13,37 @@ const QUESTIONS: string[] = [
 export default function Page() {
   const router = useRouter();
 
-  const [current, setCurrent] = useState<number>(() => {
-    if (typeof window !== 'undefined') {
-      const s = localStorage.getItem('onboarding_step_v1');
-      return s ? Number(s) : 0;
-    }
-    return 0;
-  });
+  const [current, setCurrent] = useState<number>(0);
 
-  const [answers, setAnswers] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
+  const [answers, setAnswers] = useState<string[]>(Array(QUESTIONS.length).fill(''));
+
+  // Load persisted state on mount to avoid hydration mismatches
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const s = localStorage.getItem('onboarding_step_v1');
+      if (s) setCurrent(Number(s));
+    } catch (e) {}
+
+    try {
       const saved = localStorage.getItem('onboarding_answers_v1');
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length === QUESTIONS.length) return parsed;
+          if (Array.isArray(parsed)) {
+            if (parsed.length === QUESTIONS.length) setAnswers(parsed);
+            else {
+              const arr = Array(QUESTIONS.length).fill('');
+              for (let i = 0; i < Math.min(parsed.length, QUESTIONS.length); i++) arr[i] = parsed[i] ?? '';
+              setAnswers(arr);
+            }
+          }
         } catch (e) {
           // ignore
         }
       }
-    }
-    return Array(QUESTIONS.length).fill('');
-  });
+    } catch (e) {}
+  }, []);
 
   useEffect(() => {
     try {
