@@ -92,28 +92,7 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Profile Anchor */}
-            <div className="md:col-span-8 glass-panel rounded-[2rem] p-8 flex items-center gap-8 bg-surface-container-high/50 border-primary/20">
-              <img
-                alt="MickeyVIP Profile"
-                className="w-20 h-20 rounded-full border-2 border-primary/30 object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZNGGhrVcmv1kJEvgq5-QEX40nU2UlEe_negGCv5BBOaR-zNs3Gehlfy37YBovf-aD9RT6hrB5dgKAeuYdJhj5yhEOlrgLIIwTf2qgAm8FCh995NGz_vx5AU_c-6li2F1ZO7uD-Idzv-Zvo66s8A47mCEbElRLDvnIpYSKKh8xiXYc1f2JPodeTtLjEmOMeovxoMCr1oBJBLT_tkLqWsDcswBSB8iywKFkPFxYmkJy3L0bmZC4pC1DZk75YYOopniOo4b92QRvnfxw"
-              />
-              <div>
-                <h4 className="text-white font-headline font-bold text-xl">Orquestado por MickeyVIP</h4>
-                <p className="text-on-surface-variant text-sm">
-                  Venture Architect &amp; Founder. Diseñando el futuro de la incubación algorítmica.
-                </p>
-                <div className="flex gap-4 mt-4">
-                  <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] uppercase tracking-tighter font-bold rounded-full">
-                    Portafolio 2024
-                  </span>
-                  <span className="px-3 py-1 bg-secondary/10 text-secondary text-[10px] uppercase tracking-tighter font-bold rounded-full">
-                    Miembro Visionario
-                  </span>
-                </div>
-              </div>
-            </div>
+            {/* Profile anchor removed to avoid implying a logged-in session */}
           </div>
         </section>
 
@@ -143,7 +122,7 @@ export default function Home() {
               Empoderando a la próxima generación de arquitectos de negocios con herramientas de grado industrial.
             </p>
             <div className="text-slate-500 font-body text-sm tracking-wide">
-              © 2024 SeedPath. Orquestado por MickeyVIP.
+              © 2024 SeedPath.
             </div>
           </div>
           <div className="flex flex-col md:items-end gap-8">
@@ -151,17 +130,7 @@ export default function Home() {
               <Link href="/legal" className="text-slate-500 hover:text-[#3B82F6] font-body text-sm tracking-wide transition-transform hover:translate-x-1">Privacidad</Link>
               <Link href="/legal" className="text-slate-500 hover:text-[#3B82F6] font-body text-sm tracking-wide transition-transform hover:translate-x-1">Términos</Link>
             </div>
-            <div className="flex items-center gap-4 group cursor-pointer">
-              <div className="text-right">
-                <div className="text-white text-xs font-bold font-headline uppercase">MickeyVIP</div>
-                <div className="text-slate-500 text-[10px] uppercase tracking-widest">Venture Architect &amp; Founder</div>
-              </div>
-              <img
-                alt="MickeyVIP"
-                className="w-10 h-10 rounded-full border border-white/10 group-hover:border-primary/50 transition-colors"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuACEXDxbUH57jtwtn2ZUIJX76UGwW7Sf9YY31ol7LTNrREjmOKZJkg6WRfOapfQ0PVx6W1M_BLahkjFXEJ0i-a8qENpkHv1VmjgLBalK1prrDU6WENkFKoKA6ehGSf81sv_FmTPAQxewFUxDtR13fMpiT8-ahh6AyL0cLSK5P7xAJwwPjSwpgge3y3JChhCQBEbaKuexg6iEBMBnKaDXYo07VPa0HY5NpclPhfw6eCXbi3eE_iewm1Xkuxjj58_3ThaHizN7ytfi41B"
-              />
-            </div>
+            {/* Author card removed to avoid implying an active session */}
           </div>
         </div>
         {/* Decoration Line */}

@@ -115,26 +115,7 @@ const Sidebar = () => {
           </div>
         ))}
       </nav>
-      <div className={styles.profileSection}>
-        <div className={styles.profileInfo} style={{ flexDirection: isCollapsed ? 'column' : 'row', alignItems: 'center', gap: isCollapsed ? 4 : 12 }}>
-          <img src="/avatar-mickeyvip.png" alt="MickeyVIP" className={styles.avatar} />
-          {!isCollapsed && (
-            <div style={{ minWidth: 0 }}>
-              <div className={styles.profileName} style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontSize: 15 }}>MickeyVIP</div>
-              <div className={styles.profileRole} style={{ fontSize: 12, lineHeight: 1.1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Arquitecto Senior</div>
-            </div>
-          )}
-          <Link href="/settings" className={styles.settingsIcon} aria-label="Settings">
-            <Settings size={20} />
-          </Link>
-        </div>
-        {!isCollapsed && (
-          <Link href="/" className={styles.logout}>
-            <LogOut size={18} />
-            <span>Logout</span>
-          </Link>
-        )}
-      </div>
+      {/* Profile section removed to avoid showing a logged-in hint on public pages */}
     </motion.aside>
   );
 };

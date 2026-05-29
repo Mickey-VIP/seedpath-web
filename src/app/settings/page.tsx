@@ -31,7 +31,7 @@ export default function Page() {
               <div className="glass-card p-8 rounded-lg flex items-start gap-8">
                 <div className="relative shrink-0">
                   <div className="w-24 h-24 rounded-lg overflow-hidden ring-4 ring-[#3B82F6]/10">
-                    <img alt="MickeyVIP" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7sUGSnQo1Snvt4vAhl2Ltvn7W30P5N9RNW-zq3c8rOlybdqdo9nOpUa8GfZsA5b79F7BNST08APb29Y44wBLduxWavHFzL7qjULa4O4aZ9iAaVLY-zkT1zwcl7wdRZdkv6ij6YVHnvkkHg3yN3sJQmmdosc2xYySKjN8xNzMzoPt5O78mXL7BP3Uy7-IprwkkSBdX3xECST1KenG6TeVfJoskm80Zkm9vcq4IMZJlVnDuTcoz-Kn4OeSmwhmrZvKZDJ1je-CI8hqO" />
+                    <img alt="Perfil" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7sUGSnQo1Snvt4vAhl2Ltvn7W30P5N9RNW-zq3c8rOlybdqdo9nOpUa8GfZsA5b79F7BNST08APb29Y44wBLduxWavHFzL7qjULa4O4aZ9iAaVLY-zkT1zwcl7wdRZdkv6ij6YVHnvkkHg3yN3sJQmmdosc2xYySKjN8xNzMzoPt5O78mXL7BP3Uy7-IprwkkSBdX3xECST1KenG6TeVfJoskm80Zkm9vcq4IMZJlVnDuTcoz-Kn4OeSmwhmrZvKZDJ1je-CI8hqO" />
                   </div>
                   <button className="absolute -bottom-2 -right-2 bg-primary p-2 rounded-full shadow-lg shadow-primary/20 text-on-primary active:scale-90 transition-transform">
                     <span className="material-symbols-outlined text-sm">edit</span>
@@ -50,7 +50,7 @@ export default function Page() {
                   <div className="grid grid-cols-2 gap-6 pt-4">
                     <div>
                       <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1 font-bold">Nombre de Arquitecto</label>
-                      <p className="text-on-surface font-medium">MickeyVIP</p>
+                      <p className="text-on-surface font-medium">Usuario</p>
                     </div>
                     <div>
                       <label className="block text-[10px] uppercase tracking-widest text-slate-500 mb-1 font-bold">Correo Electrónico</label>

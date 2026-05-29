@@ -48,7 +48,7 @@ export default function Page() {
                 <span className="material-symbols-outlined text-4xl text-tertiary" data-icon="token">token</span>
               </div>
               <h4 className="text-white font-headline text-xl font-bold mb-2">Token de Sesión</h4>
-              <p className="text-on-surface-variant text-sm mb-6">Su identidad MickeyVIP está verificada para acceso de alta seguridad.</p>
+              <p className="text-on-surface-variant text-sm mb-6">Su identidad está verificada para acceso de alta seguridad.</p>
               <div className="w-full h-[1px] bg-white/10 mb-6"></div>
               <div className="grid grid-cols-2 gap-4 w-full">
                 <div className="text-left">

@@ -53,19 +53,12 @@ export default function Page() {
           <div className="space-y-6">
             <div className="text-lg font-bold text-white uppercase tracking-widest">SeedPath</div>
             <p className="text-slate-500 text-sm max-w-sm">Empoderando a la próxima generación de arquitectos de negocios con herramientas de grado industrial.</p>
-            <div className="text-slate-500 text-sm">© 2024 SeedPath. Orquestado por MickeyVIP.</div>
+            <div className="text-slate-500 text-sm">© 2024 SeedPath.</div>
           </div>
           <div className="flex flex-col md:items-end gap-8">
             <div className="flex gap-8">
               <Link href="/legal" className="text-slate-500 hover:text-[#3B82F6] text-sm tracking-wide transition-transform hover:translate-x-1">Privacidad</Link>
               <Link href="/legal" className="text-slate-500 hover:text-[#3B82F6] text-sm tracking-wide transition-transform hover:translate-x-1">Términos</Link>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <div className="text-white text-xs font-bold uppercase">MickeyVIP</div>
-                <div className="text-slate-500 text-[10px] uppercase tracking-widest">Venture Architect &amp; Founder</div>
-              </div>
-              <img alt="MickeyVIP" className="w-10 h-10 rounded-full border border-white/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACEXDxbUH57jtwtn2ZUIJX76UGwW7Sf9YY31ol7LTNrREjmOKZJkg6WRfOapfQ0PVx6W1M_BLahkjFXEJ0i-a8qENpkHv1VmjgLBalK1prrDU6WENkFKoKA6ehGSf81sv_FmTPAQxewFUxDtR13fMpiT8-ahh6AyL0cLSK5P7xAJwwPjSwpgge3y3JChhCQBEbaKuexg6iEBMBnKaDXYo07VPa0HY5NpclPhfw6eCXbi3eE_iewm1Xkuxjj58_3ThaHizN7ytfi41B" />
             </div>
           </div>
         </div>

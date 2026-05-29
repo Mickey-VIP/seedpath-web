@@ -11,5 +11,18 @@
       "status": "active",
       "startedAt": 1780021908649
     }
+  },
+  {
+    "id": "u_cb687629-5df2-4aec-a137-6df8038a678c",
+    "name": "Project User",
+    "email": "projectuser@example.com",
+    "passwordHash": "$2a$08$yyjknjYWCwtgQpoESvBeZuLuQ99MELREfJ3u2wchWjez/QfGKy3DW",
+    "createdAt": 1780021991913,
+    "subscription": {
+      "plan": "starter",
+      "price": 9,
+      "status": "active",
+      "startedAt": 1780021992438
+    }
   }
 ]

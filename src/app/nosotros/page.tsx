@@ -84,7 +84,7 @@ export default function Page() {
                   </div>
                   <div className="absolute -bottom-2 right-4 bg-primary text-on-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Founder</div>
                 </div>
-                <h4 className="text-xl font-headline font-bold text-on-surface">MickeyVIP</h4>
+                <h4 className="text-xl font-headline font-bold text-on-surface">Fundador</h4>
                 <p className="text-primary text-sm font-medium">Founder &amp; Visionary</p>
               </div>
               {/* Growth */}
