@@ -54,7 +54,7 @@ export default function RootLayout({
 
             <div className="flex items-center gap-4">
               <Link href="/registro" className="hidden sm:inline-flex px-4 py-2 bg-white/5 text-white font-medium rounded-full hover:bg-white/10 transition">Crear cuenta</Link>
-              <Link href="/login" className="px-4 py-2 border border-white/10 text-white font-medium rounded-full hover:bg-white/10 transition">Iniciar sesión</Link>
+              <Link href="/login" className="px-4 py-2 bg-white/5 text-white font-medium rounded-full hover:bg-white/10 transition">Iniciar sesión</Link>
             </div>
           </div>
         </nav>
