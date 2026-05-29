@@ -79,8 +79,8 @@ export default function Page() {
       setIsAnalyzing(true);
       setTimeout(() => {
         console.log('[Onboarding] Respuestas finales:', answers);
-        // Después del cuestionario rápido, dirigir al registro/pago y luego al cuestionario avanzado
-        router.push('/onboarding/register');
+        // Después del cuestionario rápido, mostrar el análisis rápido (riesgos) y pedir correo
+        router.push('/onboarding/analysis');
       }, ANALYZE_DELAY);
     }
   }
